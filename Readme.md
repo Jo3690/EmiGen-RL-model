@@ -8,7 +8,7 @@ Pytorch 1.10.0
 
 RDKit 2020.03.2
 
-We reccomend install the relevant packages through anaconda.
+We reccomend that the environment can be installed through anaconda.
 
 For the usage of SubOptGragph as the property predictor, please refer to https://github.com/Jo3690/SOG to get all packages prepared.
 

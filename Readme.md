@@ -8,9 +8,9 @@ Pytorch 1.10.0
 
 RDKit 2020.03.2
 
-We reccomend that the environment can be installed through anaconda.
+We recommend that the environment can be installed through anaconda.
 
-For the usage of SubOptGragph as the property predictor, please refer to https://github.com/Jo3690/SOG to get all packages prepared.
+For the settings of SubOptGragph as the optical property predictor, please refer to https://github.com/Jo3690/SOG to get all packages prepared.
 
 **The pretraining of EmiGen-RL:**
 

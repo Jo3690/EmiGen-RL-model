@@ -31,5 +31,5 @@ python transfer_train.py --train blue_mols.txt --vocab vocab.txt --save_dir ./fi
 
 python RL_two.py --vocab vocab.txt --save_dir ./RL_dir/ --generative_model ./finetune_ckpt/finetune.ckpt
 
-We provide .ckpt files under the path of ./ckpt for pretrained model. You can also train your own model through the data we uploaded.
+We provide a checkpoint file under the path of ./ckpt for the weight of pretrained model. You can also train your own model through the data we uploaded.
 

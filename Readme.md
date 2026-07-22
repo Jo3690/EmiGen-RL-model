@@ -10,7 +10,7 @@ RDKit 2020.03.2
 
 We recommend that the environment can be installed through anaconda.
 
-For the settings of SubOptGragph as the optical property predictor, please refer to https://github.com/Jo3690/SOG to get all packages prepared.
+For the settings of SubOptGraph as the optical property predictor, please refer to https://github.com/Jo3690/SOG to get all packages prepared. We have offered the weights of the predictors for emission peaks and PLQYs here.
 
 **The pretraining of EmiGen-RL:**
 

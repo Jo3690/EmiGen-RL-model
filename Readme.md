@@ -1,4 +1,4 @@
-EmiGen-RL is a chemistry-aware generation framework coupled with reinforcement learning (RL) targeting multiple optical properties.
+EmiGen-RL is a chemistry-informed generation framework coupled with reinforcement learning (RL) targeting multiple optical properties.
 
 **Environment requirements:**
 

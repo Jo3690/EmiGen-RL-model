@@ -1,13 +1,13 @@
-EmiGen-RL is a chemistry-informed generation framework coupled with reinforcement learning (RL) targeting multiple optical properties.
+EmiGen-RL is a chemistry-informed generation framework coupled with reinforcement learning (RL) targeting multiple properties for complex funcational molecules.
 
 **Description:**
 
 - EmiGen-RL encompasses three levels  within a variational autoencoder (VAE) and progressively constructs molecules by coordinating global structural organization with fine-grained variability.
-- Reinforcement learning is integrated for the multi-property-guided generation with SubOptGraph acting as the property predictor, aiming at generating deep-blue molecules with high efficiency.
 - A dataset comprising 133,670 organic luminescent molecules (OLMs) is established as a test case for EmiGen-RL.
 - Against five generative models with different representation strategies, EmiGen-RL achieves the best overall performance not only on validity and plausibility, but also on uniqueness and novelty.
-- The effectiveness and potential are validated by the rediscovery of several experimentally reported deep-blue molecules with high efficiency.
-- It can be extended to the fields of other complex functional materials and updated with the development of data, predictors, and so on.
+- Reinforcement learning is integrated for the multi-property-guided generation. Here, as an example, SubOptGraph acts as the property predictor, aiming at generating deep-blue molecules with high efficiency.
+- The effectiveness and potential are validated by the rediscovery of several experimentally reported deep-blue molecules with high efficiency and two novel synthesized deep-blue moelcules with high photoluminescence quantum yield (PLQY).
+- It can be extended to the fields of other complex functional molecules/materials and updated with the development of data, predictors, and so on.
 
 
 **Environment requirements:**
@@ -46,7 +46,7 @@ python transfer_train.py --train blue_mols.txt --vocab vocab.txt --save_dir ./fi
 
 **The RL process:**
 
-For the multi-property-guided generation, we use reinforcement learning, speficically, proximal policy optimization (PPO), to generate desired complex funcation molecules (taking deep-blue molecules with high photoluminescence quantum yield as a case):
+For the multi-property-guided generation, we use reinforcement learning, speficically, proximal policy optimization (PPO), to generate desired complex funcation molecules (taking deep-blue molecules with high PLQY as a case):
 
 python RL_two.py --vocab vocab.txt --save_dir ./RL_dir/ --generative_model ./finetune_ckpt/finetune.ckpt
 

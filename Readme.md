@@ -1,6 +1,7 @@
 EmiGen-RL is a chemistry-informed generation framework coupled with reinforcement learning (RL) targeting multiple optical properties.
 
 **Description:**
+
 - EmiGen-RL encompasses three levels  within a variational autoencoder (VAE) and progressively constructs molecules by coordinating global structural organization with fine-grained variability.
 - Reinforcement learning is integrated for the multi-property-guided generation with SubOptGraph acting as the property predictor, aiming at generating deep-blue molecules with high efficiency.
 - A dataset comprising 133,670 organic luminescent molecules (OLMs) is established as a test case for EmiGen-RL.
@@ -10,7 +11,9 @@ EmiGen-RL is a chemistry-informed generation framework coupled with reinforcemen
 
 
 **Environment requirements:**
+
 Main frameworks/packages
+
 Python 3.7.3
 
 Pytorch 1.10.0
@@ -24,19 +27,26 @@ For the settings of SubOptGraph as the optical property predictor, please refer 
 **The pretraining of EmiGen-RL:**
 
 First, preprocess the vocabulary files to decompose the molecular graphs to get the substructures and connectivity points.
+
 python get_vocab.py  < data.txt > vocab.txt
 
 Then, get the graph data by using the following command, ready for the (pre)training of the model.
+
 python preprocess.py --train data.txt --vocab vocab.txt --save_dir ./data/
 
 Last, for the (pre)training process:
+
 python train_generator.py --train ./data/ --vocab vocab.txt --save_dir ./ckpt/
 
 **The finetuning of the model:**
-For the specific 
+
+For the generation of the complex funcational molecules from specific domain (taking blue-emitting as an example here)
+
 python transfer_train.py --train blue_mols.txt --vocab vocab.txt --save_dir ./finetune_ckpt/ --generative_model ./ckpt/model.ckpt
 
 **The RL process:**
+
+For the multi-property-guided generation, we use reinforcement learning, speficically, proximal policy optimization (PPO), to generate desired complex funcation molecules (taking deep-blue molecules with high photoluminescence quantum yield as a case):
 
 python RL_two.py --vocab vocab.txt --save_dir ./RL_dir/ --generative_model ./finetune_ckpt/finetune.ckpt
 

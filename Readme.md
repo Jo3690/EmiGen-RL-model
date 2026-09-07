@@ -4,7 +4,7 @@ EmiGen-RL is a chemistry-informed generation framework coupled with reinforcemen
 
 - EmiGen-RL encompasses three levels  within a variational autoencoder (VAE) and progressively constructs molecules by coordinating global structural organization with fine-grained variability.
 - A dataset comprising 133,670 organic luminescent molecules (OLMs) is established as a test case for EmiGen-RL.
-- Against five generative models with different representation strategies, EmiGen-RL achieves the best overall performance not only on validity and plausibility, but also on uniqueness and novelty.
+- Against five generative models with different representation strategies, EmiGen-RL achieves the best overall performance on validity and plausibility, uniqueness and novelty.
 - Reinforcement learning is integrated for the multi-property-guided generation. Here, as an example, SubOptGraph acts as the property predictor, aiming at generating deep-blue molecules with high efficiency.
 - The effectiveness and potential are validated by the rediscovery of several experimentally reported deep-blue molecules with high efficiency and two novel synthesized deep-blue moelcules with high photoluminescence quantum yield (PLQY).
 - It can be extended to the fields of other complex functional molecules/materials and updated with the development of data, predictors, and so on.

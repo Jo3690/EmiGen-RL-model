@@ -2,7 +2,7 @@ EmiGen-RL is a chemistry-informed generation framework coupled with reinforcemen
 
 **Description:**
 
-- EmiGen-RL encompasses three levels  within a variational autoencoder (VAE) and progressively constructs molecules by coordinating global structural organization with fine-grained variability.
+- EmiGen-RL encompasses three levels  within a variational autoencoder (VAE) and progressively constructs molecules by coordinating global structural organization with fine-grained variability coupled with reinforcement learning.
 - A dataset comprising 133,670 organic luminescent molecules (OLMs) is established as a test case for EmiGen-RL.
 - Against five generative models with different representation strategies, EmiGen-RL achieves the best overall performance on validity and plausibility, uniqueness and novelty.
 - Reinforcement learning is integrated for the multi-property-guided generation. Here, as an example, SubOptGraph acts as the property predictor, aiming at generating deep-blue molecules with high efficiency.
@@ -28,15 +28,15 @@ For the settings of SubOptGraph as the optical property predictor, please refer 
 
 First, preprocess the vocabulary files to decompose the molecular graphs to get the substructures and connectivity points.
 
-python get_vocab.py  < data.txt > vocab.txt
+python cal_vocab.py  < data.txt > vocab.txt
 
 Then, get the graph data by using the following command, ready for the (pre)training of the model.
 
-python preprocess.py --train data.txt --vocab vocab.txt --save_dir ./data/
+python data_process.py --train data.txt --vocab vocab.txt --save_dir ./data/
 
 Last, for the (pre)training process:
 
-python train_generator.py --train ./data/ --vocab vocab.txt --save_dir ./ckpt/
+python model_train.py --train ./data/ --vocab vocab.txt --save_dir ./ckpt/
 
 **The finetuning of the model:**
 

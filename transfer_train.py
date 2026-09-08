@@ -8,8 +8,8 @@ from tqdm import tqdm
 import math, random, sys
 import numpy as np
 import argparse
-import hgraph
-from hgraph import *
+import multigraph
+from multigraph import *
 import rdkit
 from rdkit import Chem
 import os
@@ -96,7 +96,7 @@ print("start**************",len(train_smiles))
 for epoch in range(args.epoch):
 
     
-    dataset = hgraph.MoleculeDataset(train_smiles, args.vocab, args.atom_vocab, args.batch_size)
+    dataset = multigraph.MoleculeDataset(train_smiles, args.vocab, args.atom_vocab, args.batch_size)
     a = 0
     
 

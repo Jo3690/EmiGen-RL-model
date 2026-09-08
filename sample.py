@@ -7,7 +7,7 @@ import numpy as np
 import argparse
 from tqdm import tqdm
 
-from hgraph import *
+from multigraph import *
 import rdkit
 
 lg = rdkit.RDLogger.logger() 
@@ -38,7 +38,7 @@ args = parser.parse_args()
 vocab = [x.strip("\r\n ").split() for x in open(args.vocab)] 
 args.vocab = PairVocab([(x,y) for x,y in vocab])
 
-model = HierVAE(args).cuda()
+model = MultiVAE(args).cuda()
 
 
 model.load_state_dict(torch.load(args.model)["model_state_dict"])

@@ -4,8 +4,8 @@ from rdkit import Chem
 import os, random, gc
 import pickle
 
-from hgraph.chemutils import get_leaves
-from hgraph.mol_graph import MolGraph
+from multigraph.chemutils import get_leaves
+from multigraph.mol_graph import MolGraph
 
 
 class MoleculeDataset(Dataset):
@@ -16,8 +16,7 @@ class MoleculeDataset(Dataset):
 
         
         for id,mol_s in enumerate(data):
-            #hmol = MolGraph(mol_s)
-            #ok = True
+
             try:
                 hmol = MolGraph(mol_s)
                 a,b,c = hmol.tensorize([mol_s], vocab, avocab)
@@ -28,16 +27,13 @@ class MoleculeDataset(Dataset):
                 pass
                 
             if ok: 
-                safe_data.append(mol_s) # 这是smiles list
+                safe_data.append(mol_s) 
                 idx.append(id)
                 
         
         print(f'After pruning {len(data)} -> {len(safe_data)}') 
-        with open("/public/home/xmpu220/emission/testhgraph/safe.txt",'w') as txt:
-            for i in safe_data:
-                txt.write(i+"\n")
-        self.batches = [safe_data[i : i + batch_size] for i in range(0, len(safe_data), batch_size)] #按照batch批次构建不同的数据类
-        
+
+        self.batches = [safe_data[i : i + batch_size] for i in range(0, len(safe_data), batch_size)] 
         self.vocab = vocab
         self.avocab = avocab
         
@@ -45,8 +41,8 @@ class MoleculeDataset(Dataset):
     def __len__(self):
         return len(self.batches)
 
-    def __getitem__(self, idx):    #自动调用getitem方法
-        return MolGraph.tensorize(self.batches[idx], self.vocab, self.avocab),  #对不同batch里的数据进行操作
+    def __getitem__(self, idx):   
+        return MolGraph.tensorize(self.batches[idx], self.vocab, self.avocab), 
 
 
 class MolEnumRootDataset(Dataset):
@@ -63,7 +59,7 @@ class MolEnumRootDataset(Dataset):
         mol = Chem.MolFromSmiles(self.batches[idx])
         leaves = get_leaves(mol)
         smiles_list = set( [Chem.MolToSmiles(mol, rootedAtAtom=i, isomericSmiles=False) for i in leaves] )
-        smiles_list = sorted(list(smiles_list)) #To ensure reproducibility
+        smiles_list = sorted(list(smiles_list)) 
 
         safe_list = []
         for s in smiles_list:
@@ -92,7 +88,7 @@ class MolPairDataset(Dataset):
 
     def __getitem__(self, idx):
         x, y = zip(*self.batches[idx])
-        x = MolGraph.tensorize(x, self.vocab, self.avocab)[:-1] #no need of order for x
+        x = MolGraph.tensorize(x, self.vocab, self.avocab)[:-1] 
         y = MolGraph.tensorize(y, self.vocab, self.avocab)
         return x + y
 
@@ -114,7 +110,7 @@ class DataFolder(object):
             with open(fn, 'rb') as f:
                 batches = pickle.load(f)
 
-            if self.shuffle: random.shuffle(batches) #shuffle data before batch
+            if self.shuffle: random.shuffle(batches) 
             for batch in batches:
                 yield batch
 

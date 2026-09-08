@@ -14,8 +14,9 @@ from tqdm.auto import tqdm
 
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem
-from hgraph import *
-from hgraph import HierVAE, common_atom_vocab, PairVocab
+from multigraph import *
+import multigraph
+from multigraph import MultiVAE, common_atom_vocab, PairVocab
 
 
 param_norm = lambda m: math.sqrt(sum([p.norm().item() ** 2 for p in m.parameters()]))
@@ -33,8 +34,7 @@ import argparse
 from torch_geometric.loader import DataLoader as GDataLoader
 
 from transfer_package import create_model,create_qy_model,OledData
-import hgraph
-from hgraph import *
+
 
 from torch.distributions import MultivariateNormal
 
@@ -433,7 +433,7 @@ if __name__ == "__main__":
 
 
 
-    model = HierVAE(args).cuda()
+    model = MultiVAE(args).cuda()
 
 
     print('Loading from checkpoint ' + args.generative_model)

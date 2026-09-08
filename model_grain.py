@@ -11,7 +11,7 @@ import argparse
 import os
 from tqdm.auto import tqdm
 import datetime
-from hgraph import *
+from multigraph import *
 
 lg = rdkit.RDLogger.logger() 
 lg.setLevel(rdkit.RDLogger.CRITICAL)
@@ -72,7 +72,7 @@ random.seed(args.seed)
 vocab = [x.strip("\r\n ").split() for x in open(args.vocab)] 
 args.vocab = PairVocab(vocab)
 
-model = HierVAE(args).cuda()
+model = MultiVAE(args).cuda()
 #params_nums = str("Model
 #with open(log_path, 'a') as f:
     #f.write(params_nums + '\n')

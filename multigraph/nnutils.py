@@ -59,7 +59,7 @@ def index_scatter(sub_data, all_data, index):
     mask = torch.ones(d0, device=all_data.device).scatter_(0, index, 0)
     return all_data * mask.unsqueeze(-1) + buf
 
-def hier_topk(cls_scores, icls_scores, vocab, topk):
+def multi_topk(cls_scores, icls_scores, vocab, topk):
     batch_size = len(cls_scores)
     cls_scores = F.log_softmax(cls_scores, dim=-1)
     cls_scores_topk, cls_topk = cls_scores.topk(topk, dim=-1)

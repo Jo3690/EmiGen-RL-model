@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 import rdkit.Chem as Chem
 import torch.nn.functional as F
-from hgraph.nnutils import *
-from hgraph.mol_graph import MolGraph
-from hgraph.rnn import GRU, LSTM
+from multigraph.nnutils import *
+from multigraph.mol_graph import MolGraph
+from multigraph.rnn import GRU, LSTM
 
 class MPNEncoder(nn.Module):
 
@@ -38,10 +38,10 @@ class MPNEncoder(nn.Module):
         mask[0, 0] = 0
         return node_hiddens * mask, h
 
-class HierMPNEncoder(nn.Module):
+class MultiMPNEncoder(nn.Module):
 
     def __init__(self, vocab, avocab, rnn_type, embed_size, hidden_size, depthT, depthG, dropout):
-        super(HierMPNEncoder, self).__init__()
+        super(MultiMPNEncoder, self).__init__()
         self.vocab = vocab
         self.hidden_size = hidden_size
         self.dropout = dropout
@@ -88,32 +88,32 @@ class HierMPNEncoder(nn.Module):
         fnode, fmess, agraph, bgraph, cgraph, _ = tree_tensors
         finput = self.E_i(fnode[:, 1])
 
-        hnode = index_select_ND(hatom, 0, cgraph).sum(dim=1)
-        hnode = self.W_i( torch.cat([finput, hnode], dim=-1) )
+        mnode = index_select_ND(hatom, 0, cgraph).sum(dim=1)
+        mnode = self.W_i( torch.cat([finput, mnode], dim=-1) )
 
-        hmess = hnode.index_select(index=fmess[:, 0], dim=0)
+        hmess = mnode.index_select(index=fmess[:, 0], dim=0)
         pos_vecs = self.E_pos.index_select(0, fmess[:, 2])
         hmess = torch.cat( [hmess, pos_vecs], dim=-1 ) 
-        return hnode, hmess, agraph, bgraph
+        return mnode, hmess, agraph, bgraph
 
-    def embed_tree(self, tree_tensors, hinter):
+    def embed_tree(self, tree_tensors, minter):
         fnode, fmess, agraph, bgraph, cgraph, _ = tree_tensors
         finput = self.E_c(fnode[:, 0])
-        hnode = self.W_c( torch.cat([finput, hinter], dim=-1) )
+        mnode = self.W_c( torch.cat([finput, minter], dim=-1) )
 
-        hmess = hnode.index_select(index=fmess[:, 0], dim=0)
+        hmess = mnode.index_select(index=fmess[:, 0], dim=0)
         pos_vecs = self.E_pos.index_select(0, fmess[:, 2])
         hmess = torch.cat( [hmess, pos_vecs], dim=-1 ) 
-        return hnode, hmess, agraph, bgraph
+        return mnode, hmess, agraph, bgraph
     
     def embed_graph(self, graph_tensors):
         fnode, fmess, agraph, bgraph, _ = graph_tensors
-        hnode = self.E_a.index_select(index=fnode, dim=0)
-        fmess1 = hnode.index_select(index=fmess[:, 0], dim=0)
+        mnode = self.E_a.index_select(index=fnode, dim=0)
+        fmess1 = mnode.index_select(index=fmess[:, 0], dim=0)
         fmess2 = self.E_b.index_select(index=fmess[:, 2], dim=0)
         fpos = self.E_apos.index_select(index=fmess[:, 3], dim=0)
         hmess = torch.cat([fmess1, fmess2, fpos], dim=-1)
-        return hnode, hmess, agraph, bgraph
+        return mnode, hmess, agraph, bgraph
 
     def embed_root(self, hmess, tree_tensors, roots):
         roots = tree_tensors[2].new_tensor(roots) 
@@ -130,13 +130,13 @@ class HierMPNEncoder(nn.Module):
         hatom,_ = self.graph_encoder(*tensors)
 
         tensors = self.embed_inter(tree_tensors, hatom)
-        hinter,_ = self.inter_encoder(*tensors)
+        minter,_ = self.inter_encoder(*tensors)
 
-        tensors = self.embed_tree(tree_tensors, hinter)
-        hnode,hmess = self.tree_encoder(*tensors)
+        tensors = self.embed_tree(tree_tensors, minter)
+        mnode,hmess = self.tree_encoder(*tensors)
         hroot = self.embed_root(hmess, tensors, [st for st,le in tree_tensors[-1]])
 
-        return hroot, hnode, hinter, hatom
+        return hroot, mnode, minter, hatom
 
 class IncMPNEncoder(MPNEncoder):
 
@@ -159,10 +159,10 @@ class IncMPNEncoder(MPNEncoder):
         node_hiddens = index_scatter(node_hiddens, node_buf, subnode)
         return node_hiddens, h
 
-class IncHierMPNEncoder(HierMPNEncoder):
+class IncMultiMPNEncoder(MultiMPNEncoder):
 
     def __init__(self, vocab, avocab, rnn_type, embed_size, hidden_size, depthT, depthG, dropout):
-        super(IncHierMPNEncoder, self).__init__(vocab, avocab, rnn_type, embed_size, hidden_size, depthT, depthG, dropout)
+        super(IncMultiMPNEncoder, self).__init__(vocab, avocab, rnn_type, embed_size, hidden_size, depthT, depthG, dropout)
         self.tree_encoder = IncMPNEncoder(rnn_type, hidden_size + MolGraph.MAX_POS, hidden_size, hidden_size, depthT, dropout)
         self.inter_encoder = IncMPNEncoder(rnn_type, hidden_size + MolGraph.MAX_POS, hidden_size, hidden_size, depthT, dropout)
         self.graph_encoder = IncMPNEncoder(rnn_type, self.atom_size + self.bond_size, self.atom_size, hidden_size, depthG, dropout)
@@ -188,36 +188,36 @@ class IncHierMPNEncoder(HierMPNEncoder):
         if is_inter_layer:
             finput = self.E_i(fnode[:, 1])
             hinput = index_select_ND(hinput, 0, cgraph).sum(dim=1)
-            hnode = self.W_i( torch.cat([finput, hinput], dim=-1) )
+            mnode = self.W_i( torch.cat([finput, hinput], dim=-1) )
         else:
             finput = self.E_c(fnode[:, 0])
             hinput = hinput.index_select(0, subnode)
-            hnode = self.W_c( torch.cat([finput, hinput], dim=-1) )
+            mnode = self.W_c( torch.cat([finput, hinput], dim=-1) )
 
         if len(submess) == 0:
             hmess = fmess
         else:
             node_buf = torch.zeros(num_nodes, self.hidden_size, device=fmess.device)
-            node_buf = index_scatter(hnode, node_buf, subnode)
+            node_buf = index_scatter(mnode, node_buf, subnode)
             hmess = node_buf.index_select(index=fmess[:, 0], dim=0)
             pos_vecs = self.E_pos.index_select(0, fmess[:, 2])
             hmess = torch.cat( [hmess, pos_vecs], dim=-1 ) 
-        return hnode, hmess, agraph, bgraph 
+        return mnode, hmess, agraph, bgraph 
 
-    def forward(self, tree_tensors, inter_tensors, graph_tensors, htree, hinter, hgraph, subtree, subgraph):
+    def forward(self, tree_tensors, inter_tensors, graph_tensors, mtree, minter, mgraph, subtree, subgraph):
         num_tree_nodes = tree_tensors[0].size(0)
         num_graph_nodes = graph_tensors[0].size(0)
 
         if len(subgraph[0]) + len(subgraph[1]) > 0:
             sub_graph_tensors = self.get_sub_tensor(graph_tensors, subgraph)[:-1]
-            hgraph.node, hgraph.mess = self.graph_encoder(sub_graph_tensors, hgraph.mess, num_graph_nodes, subgraph)
+            mgraph.node, mgraph.mess = self.graph_encoder(sub_graph_tensors, mgraph.mess, num_graph_nodes, subgraph)
 
         if len(subtree[0]) + len(subtree[1]) > 0:
-            sub_inter_tensors = self.embed_sub_tree(inter_tensors, hgraph.node, subtree, is_inter_layer=True)
-            hinter.node, hinter.mess = self.inter_encoder(sub_inter_tensors, hinter.mess, num_tree_nodes, subtree)
+            sub_inter_tensors = self.embed_sub_tree(inter_tensors, mgraph.node, subtree, is_inter_layer=True)
+            minter.node, minter.mess = self.inter_encoder(sub_inter_tensors, minter.mess, num_tree_nodes, subtree)
 
-            sub_tree_tensors = self.embed_sub_tree(tree_tensors, hinter.node, subtree, is_inter_layer=False)
-            htree.node, htree.mess = self.tree_encoder(sub_tree_tensors, htree.mess, num_tree_nodes, subtree)
+            sub_tree_tensors = self.embed_sub_tree(tree_tensors, minter.node, subtree, is_inter_layer=False)
+            mtree.node, mtree.mess = self.tree_encoder(sub_tree_tensors, mtree.mess, num_tree_nodes, subtree)
 
-        return htree, hinter, hgraph
+        return mtree, minter, mgraph
 

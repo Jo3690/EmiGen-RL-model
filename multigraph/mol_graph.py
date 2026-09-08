@@ -2,8 +2,8 @@ import torch
 import rdkit
 import rdkit.Chem as Chem
 import networkx as nx
-from hgraph.chemutils import *
-from hgraph.nnutils import *
+from multigraph.chemutils import *
+from multigraph.nnutils import *
 
 from rdkit import Chem
 from collections import defaultdict

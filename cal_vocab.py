@@ -1,6 +1,6 @@
 import sys
 import argparse 
-from hgraph import *
+from multigraph import *
 from rdkit import Chem
 from multiprocessing import Pool
 

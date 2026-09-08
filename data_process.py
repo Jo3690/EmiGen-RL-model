@@ -6,7 +6,7 @@ from functools import partial
 import torch
 import os
 
-from hgraph import MolGraph, common_atom_vocab, PairVocab
+from multigraph import MolGraph, common_atom_vocab, PairVocab
 import rdkit
 
 def to_numpy(tensors):
